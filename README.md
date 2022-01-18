@@ -1,5 +1,5 @@
 # bug-tracking
-
+## CI [![Docker Image CI](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml)
 ## How to run
 `sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres`
 
