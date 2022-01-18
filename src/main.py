@@ -25,7 +25,7 @@ def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     conn.close()
     return {"Bug": "Created"}
 
-@app.get("/bug/update/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
+@app.post("/bug/update/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
 def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str):
     params = config()
     conn = psycopg2.connect(**params)

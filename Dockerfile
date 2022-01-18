@@ -5,7 +5,7 @@ EXPOSE 5432
 #run postgres with a name
 CMD ["postgres"]
 
-FROM python:3.9
+FROM python:latest
 
 WORKDIR /bug
 
