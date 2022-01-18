@@ -1,9 +1,11 @@
 # bug-tracking
 ## CI [![Docker Image CI](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml)
-## How to run
+
+
+## Not using docker ? follow these steps
 - `sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres`
 
-### or
+### or(if container already created)
 
 - `sudo docker start [container_id]` //container_id is the id of the container sudo docker ps --all //list all containers
 
@@ -18,8 +20,6 @@
 - `docker logs -f [container_id]` //to get logs in seperate cli
 
 ### Python Dependencies
-python3 -m pip install --upgrade pip
-
 `"uvicorn[standard]", fastapi, psycopg2`
 
 ### Run Application
