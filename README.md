@@ -1,17 +1,17 @@
 # bug-tracking
-
+## CI [![Docker Image CI](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml)
 ## How to run
-sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres
+`sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres`
 
 or
 
-sudo docker start [container_id] //container_id is the id of the container sudo docker ps --all //list all containers
+`sudo docker start [container_id]` //container_id is the id of the container sudo docker ps --all //list all containers
 
-docker exec -it [container_id] bash
-psql -U postgres //connect to database
-\l //list databases
-\c postgres //connect to database
-docker logs -f [container_id] //to get logs in seperate cli
+`docker exec -it [container_id] bash`
+`psql -U` postgres //connect to database
+`\l` //list databases
+`\c` postgres //connect to database
+`docker logs -f [container_id]` //to get logs in seperate cli
 
 ### Python Dependencies
 python3 -m pip install --upgrade pip
@@ -20,7 +20,7 @@ pip install fastapi
 pip install psycopg2
 
 ### Run Application
-uvicorn main:app --reload
+`uvicorn main:app --reload`
 
 ### Open Application/docs
 
