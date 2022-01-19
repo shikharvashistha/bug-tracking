@@ -54,23 +54,23 @@ CREATE TABLE bugs(
   bug_id int,
   priority int,
   type varchar(10),
-  posted_by char(10),
-  assigned_to char(10),
-  status char(10),
-  summary char(50),
-  description char(50),
+  posted_by varchar(10),
+  assigned_to varchar(10),
+  status varchar(1),
+  summary varchar(50),
+  description varchar(50),
   deadline int,
-  created_date char(50),
-  closed_date char(50),
+  created_date varchar(50),
+  closed_date varchar(50),
   PRIMARY KEY( bug_id )
 );
 
 CREATE TABLE logs(
-  created_by char(50),
+  created_by varchar(50),
   bug_id int,
-  event char(50),
-  created_date char(50),
-  closed_date char(50)
+  event varchar(50),
+  created_date varchar(50),
+  closed_date varchar(50)
 );
 INSERT INTO logs(created_by, bug_id, event) VALUES('shikhar', 1, 'Bug Created', '2020-01-01', '2020-01-01');
 
