@@ -59,11 +59,22 @@ CREATE TABLE bugs(
   status char(10),
   summary char(50),
   description char(50),
-   PRIMARY KEY( bug_id )
+  deadline int,
+  created_date char(50),
+  closed_date char(50),
+  PRIMARY KEY( bug_id )
 );
 
+CREATE TABLE logs(
+  created_by char(50),
+  bug_id int,
+  event char(50),
+  created_date char(50),
+  closed_date char(50)
+);
+INSERT INTO logs(created_by, bug_id, event) VALUES('shikhar', 1, 'Bug Created', '2020-01-01', '2020-01-01');
 
-INSERT INTO bugs(bug_id, priority, type, posted_by, assigned_to, status, description)
+INSERT INTO bugs(bug_id, priority, type, posted_by, assigned_to, status, description, deadline, created_date, closed_date) VALUES(1, 1, 'Bug', 'shikhar', 'shikhar', 'Open', 'Bug in UI', '2', '2020-01-01', '2020-01-01');
 VALUES (2, 3, 'help', 'shikhar', 'shikhar', 'closed', 'help request');
 
 http://127.0.0.1:8000/bug/create/%7B1%7D/%7B3%7D/%7B%22support%22%7D/%7B%22shikharvashistha%22%7D/%7B%22shikharvashistha%22%7D/%7B%22opened%22%7D/%7B%22supportreques%22%7D

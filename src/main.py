@@ -3,6 +3,7 @@
 import psycopg2
 
 from config import config
+from datetime import date
 
 from fastapi import FastAPI
 
@@ -30,6 +31,13 @@ users = {
         "full_name": "Mayank Singh",
         "email": "mayank@singh.com",
         "hashed_password": "fakehashedsingh",
+        "disabled": False,
+    },
+    "abc": {
+        "username": "abc",
+        "full_name": "ABC",
+        "email": "abc@def.com",
+        "hashed_password": "fakehashedabc",
         "disabled": False,
     },
 }
@@ -110,7 +118,9 @@ def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     conn = psycopg2.connect(**params)
     print("Connected to database")
     cur = conn.cursor()
-    cur.execute("INSERT INTO bugs (bug_id, priority, type, posted_by, assigned_to, status, summary, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);", (bug_id, priority, type, posted_by, assigned_to, status, summary, description))
+    today = date.today()
+    dateTimeStr = str(today)
+    cur.execute("INSERT INTO bugs(bug_id, priority, type, posted_by, assigned_to, status, summary, description, deadline, created_date, closed_date) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (bug_id, priority, type, posted_by, assigned_to, status, summary, description, 2*priority, dateTimeStr, dateTimeStr))
     conn.commit()
     cur.close()
     conn.close()
@@ -122,23 +132,27 @@ def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     conn = psycopg2.connect(**params)
     print("Connected to database")
     cur = conn.cursor()
+    today = date.today()
+    dateTimeStr = str(today)
+    if status == "closed":
+        cur.execute("UPDATE bugs SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s, closed_date = %s WHERE bug_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, 2*priority, dateTimeStr, dateTimeStr))
     cur.execute("UPDATE bugs SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s WHERE bug_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, bug_id))
     conn.commit()
     cur.close()
     conn.close()
     return {"Bug": "Updated"}
 
-@app.delete("/bug/delete/{bug_id}")
-def delete(bug_id: int=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
-    cur = conn.cursor()
-    print("Connected to database")
-    cur.execute("DELETE FROM bugs WHERE bug_id = %s;", (bug_id,))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return {"Bug ": "Deleted"}
+#@app.delete("/bug/delete/{bug_id}")
+#def delete(bug_id: int, s: str=Depends(get_current_active_user)):
+#    params = config()
+#    conn = psycopg2.connect(**params)
+#    cur = conn.cursor()
+#    print("Connected to database")
+#    cur.execute("DELETE FROM bugs WHERE bug_id = %s;", bug_id)
+#    conn.commit()
+#    cur.close()
+#    conn.close()
+#    return {"Bug ": "Deleted"}
 
 @app.get("/bug/list/")
 def list(s: str =Depends(get_current_active_user)):
@@ -151,7 +165,65 @@ def list(s: str =Depends(get_current_active_user)):
     cur.close()
     conn.close()
     return rows
+@app.get("/bug/assigned_to/{assigned_to}")
+def list_by_assigned_to(assigned_to: str, s: str=Depends(get_current_active_user)):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    print("Connected to database")
+    cur.execute("SELECT * FROM bugs WHERE assigned_to LIKE \%%s\%;", assigned_to)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
 
+@app.get("/bug/status/{status}")
+def list_by_status(status: str, s: str=Depends(get_current_active_user)):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    print("Connected to database")
+    cur.execute("SELECT * FROM bugs WHERE assigned_to LIKE \%%s\%;", status)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+@app.get("/bug/posted_by/{posted_by}")
+def list_by_posted_by(posted_by: str, s: str=Depends(get_current_active_user)):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    print("Connected to database")
+    cur.execute("SELECT * FROM bugs WHERE assigned_to LIKE \%%s\%;", posted_by)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+@app.get("/bug/priority/{priority}")
+def list_by_priority(priority: str, s: str=Depends(get_current_active_user)):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    print("Connected to database")
+    cur.execute("SELECT * FROM bugs WHERE priority LIKE \%%s\%;", priority)
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
+
+@app.get("/bug/listlog/")
+def listlog(s: str =Depends(get_current_active_user)):
+    params = config()
+    conn = psycopg2.connect(**params)
+    cur = conn.cursor()
+    print("Connected to database")
+    cur.execute("SELECT * FROM logs;")
+    rows = cur.fetchall()
+    cur.close()
+    conn.close()
+    return rows
 def main():
     pass
 
