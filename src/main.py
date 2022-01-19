@@ -6,15 +6,106 @@ from config import config
 
 from fastapi import FastAPI
 
+from typing import Optional
+from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel
+users = {
+    "shikhar": {
+        "username": "shikhar",
+        "full_name": "Shikhar Vashistha",
+        "email": "shikhar@vashistha.com",
+        "hashed_password": "fakehashedvashistha",
+        "disabled": False,
+    },
+    "anshuman": {
+        "username": "anshuman",
+        "full_name": "Anshuman Raj",
+        "email": "anshuman@raj.com",
+        "hashed_password": "fakehashedraj",
+        "disabled": False,
+    },
+    "mayank": {
+        "username": "mayank",
+        "full_name": "Mayank Singh",
+        "email": "mayank@singh.com",
+        "hashed_password": "fakehashedsingh",
+        "disabled": False,
+    },
+}
+
 app = FastAPI()
 
+def fake_hash_password(password: str):
+    return "fakehashed" + password
+
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+
+class User(BaseModel):
+    username: str
+    email: Optional[str] = None
+    full_name: Optional[str] = None
+    disabled: Optional[bool] = None
+
+
+class UserInDB(User):
+    hashed_password: str
+
+
+def get_user(db, username: str):
+    if username in db:
+        user_dict = db[username]
+        return UserInDB(**user_dict)
+
+
+def fake_decode_token(token):
+    user = get_user(users, token)
+    return user
+
+
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    user = fake_decode_token(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
+
+async def get_current_active_user(current_user: User = Depends(get_current_user)):
+    if current_user.disabled:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    return current_user
+
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    user_dict = users.get(form_data.username)
+    if not user_dict:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+    user = UserInDB(**user_dict)
+    hashed_password = fake_hash_password(form_data.password)
+    if not hashed_password == user.hashed_password:
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    return {"access_token": user.username, "token_type": "bearer"}
+
+
+@app.get("/users/me")
+async def read_users_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
+
 @app.get("/")
-def init():
+def init(s: str =Depends(get_current_active_user)):
     return {"Bug": "Tracking"}
 
 
-@app.get("/bug/create/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
-def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str):
+@app.post("/bug/create/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
+def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str = Depends(get_current_active_user)):
     params = config()
     conn = psycopg2.connect(**params)
     print("Connected to database")
@@ -26,7 +117,7 @@ def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     return {"Bug": "Created"}
 
 @app.post("/bug/update/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
-def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str):
+def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str=Depends(get_current_active_user)):
     params = config()
     conn = psycopg2.connect(**params)
     print("Connected to database")
@@ -38,7 +129,7 @@ def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     return {"Bug": "Updated"}
 
 @app.delete("/bug/delete/{bug_id}")
-def delete(bug_id: int):
+def delete(bug_id: int=Depends(get_current_active_user)):
     params = config()
     conn = psycopg2.connect(**params)
     cur = conn.cursor()
@@ -50,7 +141,7 @@ def delete(bug_id: int):
     return {"Bug ": "Deleted"}
 
 @app.get("/bug/list/")
-def list():
+def list(s: str =Depends(get_current_active_user)):
     params = config()
     conn = psycopg2.connect(**params)
     cur = conn.cursor()

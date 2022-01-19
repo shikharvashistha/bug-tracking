@@ -6,9 +6,9 @@
 or
 
 `sudo docker start [container_id]` //container_id is the id of the container sudo docker ps --all //list all containers
-
+`docker push shikharvashistha/bug-tracking`
 `docker exec -it [container_id] bash`
-`psql -U` postgres //connect to database
+`psql -U postgres` //connect to database
 `\l` //list databases
 `\c` postgres //connect to database
 `docker logs -f [container_id]` //to get logs in seperate cli
@@ -42,9 +42,10 @@ python3 -m pip install --upgrade pip
 pip install "uvicorn[standard]"
 pip install fastapi
 pip install psycopg2
+pip install python-multipart
 uvicorn main:app --reload
 
-CREATE TABLE table_name(
+CREATE TABLE bugs(
   bug_id int,
   priority int,
   type varchar(10),

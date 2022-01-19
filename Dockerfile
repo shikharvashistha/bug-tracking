@@ -1,9 +1,4 @@
-# pull latest postgres image
 FROM postgres:latest
-#run postgres on port 5432
-EXPOSE 5432
-#run postgres with a name
-CMD ["postgres"]
 
 FROM python:latest
 
@@ -15,4 +10,6 @@ RUN pip install --no-cache-dir --upgrade -r /bug/requirements.txt
 
 COPY ./src/ /bug/src/
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
+RUN cd src/
+RUN uvicorn main:app --port=8000 --reload
+EXPOSE 8080
