@@ -1,30 +1,35 @@
 # bug-tracking
 ## CI [![Docker Image CI](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/shikharvashistha/bug-tracking/actions/workflows/docker-image.yml)
-## How to run
-`sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres`
 
-or
 
-`sudo docker start [container_id]` //container_id is the id of the container sudo docker ps --all //list all containers
-`docker push shikharvashistha/bug-tracking`
-`docker exec -it [container_id] bash`
-`psql -U postgres` //connect to database
-`\l` //list databases
-`\c` postgres //connect to database
-`docker logs -f [container_id]` //to get logs in seperate cli
+## Not using docker ? follow these steps
+- `sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres`
+
+### or(if container already created)
+
+- `sudo docker start [container_id]` //container_id is the id of the container sudo docker ps --all //list all containers
+
+- `docker exec -it [container_id] bash`
+
+- `psql -U postgres` //connect to database
+
+- `\l` //list databases
+
+- `\c postgres` //connect to database
+
+- `docker logs -f [container_id]` //to get logs in seperate cli
 
 ### Python Dependencies
-python3 -m pip install --upgrade pip
-pip install "uvicorn[standard]"
-pip install fastapi
-pip install psycopg2
+`"uvicorn[standard]", fastapi, psycopg2`
 
 ### Run Application
 `uvicorn main:app --reload`
 
-### Open Application/docs
+## Open Application/docs for SWAGGER UI
 
-### Notes
+
+## Notes
+```
 sudo docker pull postgres:latest
 sudo docker run --name postgresSQL -e POSTGRES_PASSWORD=123 -p 5432:5432 -d postgres
 docker exec -it [container_id] bash
@@ -69,3 +74,4 @@ http://127.0.0.1:8000/bug/create/%7B1%7D/%7B3%7D/%7B%22support%22%7D/%7B%22shikh
 github.com/login?
 
 http://127.0.0.1:8000/bug/create?bug_id=1&priority=3&type=issue&posted_by=shikhar&assigned_to=shikhar&status=opened&description=issue
+```
