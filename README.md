@@ -42,7 +42,7 @@ sudo docker ps --all //list all containers
 Day 4 2nd half
 15-30 minutes slides
 
-
+`pip install -r requirements.txt`
 python3 -m pip install --upgrade pip
 pip install "uvicorn[standard]"
 pip install fastapi
@@ -72,6 +72,15 @@ CREATE TABLE logs(
   created_date varchar(50),
   closed_date varchar(50)
 );
+
+CREATE table users(
+    user_id int,
+    name varchar(50),
+    email varchar(50)
+);
+
+insert into users(user_id, name, email) values(3, 'c', 'abc@gmail.com');
+
 INSERT INTO logs(created_by, bug_id, event) VALUES('shikhar', 1, 'Bug Created', '2020-01-01', '2020-01-01');
 
 INSERT INTO bugs(bug_id, priority, type, posted_by, assigned_to, status, description, deadline, created_date, closed_date) VALUES(1, 1, 'Bug', 'shikhar', 'shikhar', 'Open', 'Bug in UI', '2', '2020-01-01', '2020-01-01');
