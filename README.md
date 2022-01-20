@@ -81,7 +81,7 @@ CREATE table users(
 
 insert into users(user_id, name, email) values(3, 'c', 'abc@gmail.com');
 
-INSERT INTO logs(created_by, bug_id, event) VALUES('shikhar', 1, 'Bug Created', '2020-01-01', '2020-01-01');
+INSERT INTO logs(created_by, bug_id, event, created_date, closed_date) VALUES('shikhar', 1, 'Bug Created', 'today', 'today');
 
 INSERT INTO bugs(bug_id, priority, type, posted_by, assigned_to, status, description, deadline, created_date, closed_date) VALUES(1, 1, 'Bug', 'shikhar', 'shikhar', 'Open', 'Bug in UI', '2', '2020-01-01', '2020-01-01');
 VALUES (2, 3, 'help', 'shikhar', 'shikhar', 'closed', 'help request');

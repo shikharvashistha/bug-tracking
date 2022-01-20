@@ -12,4 +12,5 @@ COPY ./src/ /bug/src/
 
 RUN cd src/
 #RUN uvicorn main:app --port=8000 --reload
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080", "--reload"]
 EXPOSE 8080
