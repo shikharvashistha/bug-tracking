@@ -14,5 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the Docker image for App
+    - working-directory: src/ 
+      run: docker build .
+    - uses: actions/checkout@v2
+    - name: Build the Docker image for db
+    - working-directory: postgres/
       run: docker build .
