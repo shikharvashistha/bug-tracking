@@ -145,7 +145,7 @@ def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
         cur.execute("UPDATE bugs SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s, closed_date = %s WHERE bug_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, dateTimeStr, bug_id))
     cur.execute("UPDATE bugs SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s WHERE bug_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, bug_id))
     crr.execute("SELECT name FROM users WHERE name = %s;", (posted_by))
-    cuu.execute("INSERT INTO logs(created_by, bug_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (posted_by, bug_id, "created", dateTimeStr, dateTimeStr))
+    cuu.execute("INSERT INTO logs(created_by, bug_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (posted_by, bug_id, "updated", dateTimeStr, dateTimeStr))
     conn.commit()
     crr.close()
     cuu.close()
