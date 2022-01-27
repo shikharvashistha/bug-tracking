@@ -1,13 +1,13 @@
 #!/usr/bin/python
-
 import psycopg2
 
 from config import config
 import datetime
-
+import os
 from fastapi import FastAPI
 
 from typing import Optional
+import uvicorn
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -43,6 +43,9 @@ users = {
 }
 
 app = FastAPI()
+def get_database():
+    connection=psycopg2.connect(host=os.getenv("PG_ADDR"), user=os.getenv("PG_USER"), password=os.getenv("PG_PASS"), database=os.getenv("PG_DB"), port=5432)
+    return connection
 
 def fake_hash_password(password: str):
     return "fakehashed" + password
@@ -113,9 +116,7 @@ def init(s: str =Depends(get_current_active_user)):
 
 
 @app.post("/bug/create/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
-def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str, s: str= Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str, s: str= Depends(get_current_active_user), conn =Depends(get_database)):
     print("Connected to database")
     cur = conn.cursor()
     crr = conn.cursor()
@@ -132,9 +133,7 @@ def create(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
     return {"Bug": "Created"}
 
 @app.post("/bug/update/{bug_id}/{priority}/{type}/{posted_by}/{assigned_to}/{status}/{description}")
-def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str, s: str=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: str, status: str, summary: str, description: str, s: str=Depends(get_current_active_user), conn =Depends(get_database)):
     print("Connected to database")
     cur = conn.cursor()
     crr = conn.cursor()
@@ -166,9 +165,7 @@ def update(bug_id: int, priority: int, type: str, posted_by: str, assigned_to: s
 #    return {"Bug ": "Deleted"}
 
 @app.get("/bug/list/")
-def list(s: str =Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def list(s: str =Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     print("Connected to database")
     cur.execute("SELECT * FROM bugs;")
@@ -177,9 +174,7 @@ def list(s: str =Depends(get_current_active_user)):
     conn.close()
     return rows
 @app.get("/bug/assigned_to/{assigned_to}")
-def list_by_assigned_to(assigned_to: str, s: str=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def list_by_assigned_to(assigned_to: str, s: str=Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     print("Connected to database")
     cur.execute("SELECT * FROM bugs WHERE assigned_to=%s;", assigned_to)
@@ -189,9 +184,7 @@ def list_by_assigned_to(assigned_to: str, s: str=Depends(get_current_active_user
     return rows
 
 @app.get("/bug/status/{status}")
-def list_by_status(status: str, s: str=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def list_by_status(status: str, s: str=Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     print("Connected to database")
     cur.execute("SELECT * FROM bugs WHERE status=%s;", str(status))
@@ -201,9 +194,7 @@ def list_by_status(status: str, s: str=Depends(get_current_active_user)):
     return rows
 
 @app.get("/bug/posted_by/{posted_by}")
-def list_by_posted_by(posted_by: str, s: str=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def list_by_posted_by(posted_by: str, s: str=Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     crr = conn.cursor()
     print("Connected to database")
@@ -217,9 +208,7 @@ def list_by_posted_by(posted_by: str, s: str=Depends(get_current_active_user)):
     return rows+rows2
 
 @app.get("/bug/priority/{priority}")
-def list_by_priority(priority: str, s: str=Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def list_by_priority(priority: str, s: str=Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     print("Connected to database")
     cur.execute("SELECT * FROM bugs WHERE priority=%s;", priority)
@@ -229,9 +218,7 @@ def list_by_priority(priority: str, s: str=Depends(get_current_active_user)):
     return rows
 
 @app.get("/bug/listlog/")
-def listlog(s: str =Depends(get_current_active_user)):
-    params = config()
-    conn = psycopg2.connect(**params)
+def listlog(s: str =Depends(get_current_active_user), conn =Depends(get_database)):
     cur = conn.cursor()
     print("Connected to database")
     cur.execute("SELECT * FROM logs;")
@@ -240,7 +227,7 @@ def listlog(s: str =Depends(get_current_active_user)):
     conn.close()
     return rows
 def main():
-    pass
+    uvicorn.run(app, host='0.0.0.0', port=8000)
 
 
 if __name__ == '__main__':

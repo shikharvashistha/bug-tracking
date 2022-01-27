@@ -1,6 +1,23 @@
-version: "3.8"
+version: "3"
 services:
   bug :
     build: ./src/
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      - PG_USER=postgres
+      - PG_PASS=123
+      - PG_ADDR=db
+      - PG_DB=postgres
   db:
     build: ./postgres/
+    volumes:
+      - ./pg_data:/var/lib/postgres/data
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=postgres

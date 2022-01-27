@@ -8,5 +8,6 @@ RUN pip install --no-cache-dir --upgrade -r ./requirements.txt
 
 COPY ./ ./
 
-CMD ["uvicorn", "main:app", "--reload"]
 EXPOSE 8000
+
+ENTRYPOINT python3 main.py
