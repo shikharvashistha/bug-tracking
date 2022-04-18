@@ -101,7 +101,7 @@ def create(order_id: str, priority: int, type: str, posted_by: str, assigned_to:
     today = datetime.datetime.now()
     dateTimeStr = str(today)
     cur.execute("INSERT INTO orders(order_id, priority, type, posted_by, assigned_to, status, summary, description, deadline, created_date, closed_date) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);", (order_id, priority, type, posted_by, assigned_to, status, summary, description, 2*priority, dateTimeStr, dateTimeStr))
-    cuu.execute("INSERT INTO logs(created_by, order_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (posted_by, order_id, "created", dateTimeStr, dateTimeStr))
+    cuu.execute("INSERT INTO logs(created_by, order_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (s.username, order_id, "created", dateTimeStr, dateTimeStr))
     conn.commit()
     cuu.close()
     cur.close()
@@ -120,7 +120,7 @@ def update(order_id: str, priority: int, type: str, posted_by: str, assigned_to:
     if status == "c":
         cur.execute("UPDATE orders SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s, closed_date = %s WHERE order_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, dateTimeStr, order_id))
     cur.execute("UPDATE orders SET priority = %s, type = %s, posted_by = %s, assigned_to = %s, status = %s, summary = %s, description = %s WHERE order_id = %s;", (priority, type, posted_by, assigned_to, status, summary, description, order_id))
-    cuu.execute("INSERT INTO logs(created_by, order_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (posted_by, order_id, "updated", dateTimeStr, dateTimeStr))
+    cuu.execute("INSERT INTO logs(created_by, order_id, event, created_date, closed_date) VALUES(%s, %s, %s, %s, %s);", (s.username, order_id, "updated", dateTimeStr, dateTimeStr))
     conn.commit()
     cuu.close()
     cur.close()
